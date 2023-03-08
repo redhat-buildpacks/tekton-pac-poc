@@ -2,7 +2,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
-  name: maven-build
+  name: buildpacks-build
   annotations:
     # The event we are targeting as seen from the webhook payload
     # this can be an array too, i.e: [pull_request, push]
@@ -33,7 +33,6 @@ spec:
     workspaces:
       - name: source
       - name: basic-auth
-      - name: maven-settings
     tasks:
       - name: fetch-repository
         taskRef:
@@ -62,8 +61,6 @@ spec:
         workspaces:
           - name: source
             workspace: source
-          - name: maven-settings
-            workspace: maven-settings
 
   workspaces:
     - name: source
@@ -79,5 +76,3 @@ spec:
     - name: basic-auth
       secret:
         secretName: "{{ git_auth_secret }}"
-    - name: maven-settings
-      emptyDir: {}
