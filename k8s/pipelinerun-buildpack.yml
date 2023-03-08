@@ -58,7 +58,7 @@ spec:
           - name: APP_IMAGE
             value: localhost:5000/buildpacks-app
           - name: BUILDER_IMAGE
-            value: docker.io/cnbs/sample-builder:alpine@sha256:62159ce68793aacc4dad3465b3fd6f2c9ca736229c9d9f7b464ab75d959a3b51
+            value: docker.io/cnbs/sample-builder:alpine@sha256:da5ff69191919f1ff30d5e28859affff8e39f23038137c7751e24a42e919c1ab
         workspaces:
           - name: source
             workspace: source
