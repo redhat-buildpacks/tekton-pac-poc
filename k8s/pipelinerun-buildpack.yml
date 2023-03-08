@@ -55,9 +55,9 @@ spec:
           - fetch-repository
         params:
           - name: APP_IMAGE
-            value: localhost:5000/buildpacks-app
+            value: ttl.sh/87445400-8BAD-428D-8429-97A8A8395CFC:1h
           - name: BUILDER_IMAGE
-            value: paketobuildpacks/builder:base
+            value: codejive/buildpacks-quarkus-builder
         workspaces:
           - name: source
             workspace: source
