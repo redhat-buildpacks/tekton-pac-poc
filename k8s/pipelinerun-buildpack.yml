@@ -62,8 +62,6 @@ spec:
         workspaces:
           - name: source
             workspace: source
-          - name: maven-settings
-            workspace: maven-settings
 
   workspaces:
     - name: source
@@ -79,5 +77,3 @@ spec:
     - name: basic-auth
       secret:
         secretName: "{{ git_auth_secret }}"
-    - name: maven-settings
-      emptyDir: {}
