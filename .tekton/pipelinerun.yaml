@@ -55,7 +55,7 @@ spec:
           - fetch-repository
         params:
           - name: APP_IMAGE
-            value: localhost:5000/buildpacks-app
+            value: ttl.sh/4974ccec-5ef7-466a-9fa3-d60ba753eaab:2h
           - name: BUILDER_IMAGE
             value: paketobuildpacks/builder:base
         workspaces:
