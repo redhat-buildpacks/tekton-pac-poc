@@ -14,7 +14,7 @@ metadata:
     # Fetch the needed tasks from hub to reference them as
     # taskRef part of the pipeline.
     pipelinesascode.tekton.dev/task: "git-clone"
-    pipelinesascode.tekton.dev/task-1: "mvn"
+    pipelinesascode.tekton.dev/task-1: "maven"
 
     # You can add more tasks by increasing the suffix number, you can specify
     # them as array to have multiple of them.
@@ -55,12 +55,15 @@ spec:
             value: $(params.revision)
       - name: build
         taskRef:
-          name: mvn
+          name: maven
         runAfter:
           - fetch-repository
         params:
-          - name: goal
-            value: package
+          - name: GOALS
+            value:
+              - -DskipTests
+              - clean
+              - package
         workspaces:
           - name: source
             workspace: source
