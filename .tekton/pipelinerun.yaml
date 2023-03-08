@@ -57,7 +57,7 @@ spec:
           - name: APP_IMAGE
             value: ttl.sh/4974ccec-5ef7-466a-9fa3-d60ba753eaab:2h
           - name: BUILDER_IMAGE
-            value: paketobuildpacks/builder:base
+            value: gcr.io/paketo-buildpacks/builder:base
         workspaces:
           - name: source
             workspace: source
