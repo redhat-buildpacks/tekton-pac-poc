@@ -85,3 +85,5 @@ spec:
     - name: basic-auth
       secret:
         secretName: "{{ git_auth_secret }}"
+    - name: maven-settings
+      emptyDir: {}
