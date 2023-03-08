@@ -55,7 +55,7 @@ spec:
           - fetch-repository
         params:
           - name: APP_IMAGE
-            value: ttl.sh/87445400-8BAD-428D-8429-97A8A8395CFC:1h
+            value: ttl.sh/c04768cb-2012-4280-990d-a9adf51c7462:2h
           - name: BUILDER_IMAGE
             # value: codejive/buildpacks-quarkus-builder
             value: gcr.io/paketo-buildpacks/builder:base
