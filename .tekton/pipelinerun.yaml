@@ -58,6 +58,14 @@ spec:
             value: ttl.sh/4974ccec-5ef7-466a-9fa3-d60ba753eaab:2h
           - name: BUILDER_IMAGE
             value: gcr.io/paketo-buildpacks/builder:base
+          - name: ENV_VARS
+            value:
+              - name: BP_NATIVE_IMAGE
+                value: "false"
+              - name: BP_MAVEN_BUILT_ARTIFACT
+                value: func.yaml target/quarkus-app/lib/ target/quarkus-app/*.jar target/quarkus-app/app/ target/quarkus-app/quarkus/
+              - name: BP_MAVEN_BUILD_ARGUMENTS
+                value: package -DskipTests=true -Dmaven.javadoc.skip=true -Dquarkus.package.type=fast-jar
         workspaces:
           - name: source
             workspace: source
