@@ -1,9 +1,27 @@
 package org.acme.getting.started;
 
-import io.quarkus.test.junit.QuarkusIntegrationTest;
+import io.github.snowdrop.jester.api.Container;
+import io.github.snowdrop.jester.api.Jester;
+import io.github.snowdrop.jester.api.RestService;
+import io.github.snowdrop.jester.api.RunOnKubernetes;
+import org.junit.jupiter.api.Test;
 
-@QuarkusIntegrationTest
-public class GreetingResourceIT extends GreetingResourceTest {
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.is;
 
-    // Execute the same tests but in native mode.
+@Jester
+@RunOnKubernetes
+public class GreetingResourceIT {
+
+    @Container(image = "THE IMAGE", ports = 8080, expectedLog = "Installed features")
+    static RestService app = new RestService();
+
+    @Test
+    public void testHelloEndpoint() {
+        given()
+                .when().get("/hello")
+                .then()
+                .statusCode(200)
+                .body(is("Hello RESTEasy"));
+    }
 }
