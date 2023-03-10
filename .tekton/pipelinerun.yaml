@@ -44,6 +44,8 @@ spec:
         workspaces:
           - name: source
             workspace: source
+          - name: cache
+            workspace: cache
         taskSpec:
           workspaces:
             - name: source
@@ -51,9 +53,9 @@ spec:
             - image: bash:latest
               script: |
                 #!/usr/bin/env bash
-                echo "Current dir: $(pwd)"
                 echo "Home dir: $HOME"
                 ls -la /workspace/source/ || true
+                cp -R "$(workspaces.source.path)"/* "$(workspaces.cache.path)"
         runAfter:
           - fetch-repository
       - name: buildpacks
@@ -75,21 +77,24 @@ spec:
         workspaces:
           - name: source
             workspace: source
-          # - name: cache
-          #   workspace: cache-ws
       - name: list-files-workspace-2
         workspaces:
           - name: source
             workspace: source
+          - name: cache
+            workspace: cache
         taskSpec:
           workspaces:
             - name: source
+            - name: cache
           steps:
             - image: bash:latest
               script: |
                 #!/usr/bin/env bash
                 echo "Current dir: $(pwd)"
                 echo "Home dir: $HOME"
+                ls -la /
+                ls -la /workspace/ || true
                 ls -la /workspace/source/ || true
                 ls -la /workspace/output/ || true
         runAfter:
@@ -151,7 +156,6 @@ spec:
             workspace: source
   workspaces:
     - name: source
-      #subPath: source
       volumeClaimTemplate:
         spec:
           accessModes:
@@ -159,15 +163,14 @@ spec:
           resources:
             requests:
               storage: 1Gi
-    # - name: cache-ws
-    #   subPath: cache
-    #   volumeClaimTemplate:
-    #     spec:
-    #       accessModes:
-    #         - ReadWriteOnce
-    #       resources:
-    #         requests:
-    #           storage: 1Gi
+    - name: cache
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 1Gi
     - name: basic-auth
       secret:
         secretName: "{{ git_auth_secret }}"
