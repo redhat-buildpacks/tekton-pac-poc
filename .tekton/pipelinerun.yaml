@@ -50,6 +50,7 @@ spec:
         taskSpec:
           workspaces:
             - name: source
+            - name: cache
           steps:
             - image: bash:latest
               script: |
