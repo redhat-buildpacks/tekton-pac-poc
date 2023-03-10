@@ -47,7 +47,8 @@ spec:
               script: |
                 #!/usr/bin/env bash
                 echo "Current dir: $(pwd)"
-                echo "workspaces.source.path: ${workspaces.source.path}"
+                echo "Content: /workspace/output/"
+                ls -la /workspace/output/ || true
         runAfter:
           - fetch-repository
       - name: buildpacks
@@ -76,7 +77,8 @@ spec:
               script: |
                 #!/usr/bin/env bash
                 echo "Current dir: $(pwd)"
-                echo "workspaces.source.path: ${workspaces.source.path}"
+                echo "Content: /workspace/output/"
+                ls -la /workspace/output/ || true
         runAfter:
           - buildpacks
       - name: package
