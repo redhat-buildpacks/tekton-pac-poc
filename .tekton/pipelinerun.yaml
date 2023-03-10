@@ -50,9 +50,13 @@ spec:
           steps:
             - image: bash:latest
               script: |
-                #!/usr/bin/env bash
-                echo "Home dir: $HOME"
-                ls -la /workspace/source/ || true
+                set -e
+                
+                echo "> Setting permissions on '$(workspaces.source.path)'..."
+                chown -R "$(params.USER_ID):$(params.GROUP_ID)" "$(workspaces.source.path)"
+                
+                echo "> Creating a temporary folder to copy the git code source
+                mkdir -p "$(workspaces.source.path)/temp"
                 cp -R "$(workspaces.source.path)"/* "$(workspaces.source.path)/temp"
         runAfter:
           - fetch-repository
@@ -86,10 +90,6 @@ spec:
             - image: bash:latest
               script: |
                 #!/usr/bin/env bash
-                set -e
-                
-                echo "> Setting permissions on '$(workspaces.source.path)'..."
-                chown -R "$(params.USER_ID):$(params.GROUP_ID)" "$(workspaces.source.path)"
                 
                 ls -la /
                 ls -la /workspace/ || true
