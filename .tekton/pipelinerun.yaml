@@ -16,6 +16,7 @@ metadata:
     pipelinesascode.tekton.dev/task: "git-clone"
     pipelinesascode.tekton.dev/task-1: "buildpacks"
     pipelinesascode.tekton.dev/task-2: "maven"
+    pipelinesascode.tekton.dev/task-3: "kubernetes-actions"
 
     # how many runs we want to keep attached to this event
     pipelinesascode.tekton.dev/max-keep-runs: "5"
