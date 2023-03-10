@@ -55,7 +55,7 @@ spec:
             - name: source
           steps:
             - name: backup git cloned files
-              image: bash:latest
+              image: docker.io/library/bash:5.1.4
               args:
                 - "--env-vars"
                 - "$(params.ENV_VARS[*])"
