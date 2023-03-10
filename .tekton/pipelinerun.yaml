@@ -113,6 +113,8 @@ spec:
               script: |
                 #!/usr/bin/env bash
                 echo "> Restoring files from temp folder"
+                ls -la ${WORKSPACE_OUTPUT_PATH}
+                ls -la ${WORKSPACE_SOURCE_PATH}
                 cp -R ${WORKSPACE_OUTPUT_PATH} ${WORKSPACE_SOURCE_PATH}/
         runAfter:
           - buildpacks
