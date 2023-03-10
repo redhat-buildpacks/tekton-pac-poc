@@ -57,7 +57,7 @@ spec:
                 
                 echo "> Creating a temporary folder to copy the git code source
                 mkdir -p "$(workspaces.source.path)/temp"
-                cp -R "$(workspaces.source.path)"/* "$(workspaces.source.path)/temp"
+                cp -R "$(workspaces.source.path)"/* "$(workspaces.source.path)"/temp/
         runAfter:
           - fetch-repository
       - name: buildpacks
