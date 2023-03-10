@@ -40,7 +40,7 @@ spec:
             value: $(params.repo_url)
           - name: revision
             value: $(params.revision)
-      - name: list-files-workspace
+      - name: list-files-workspace-1
         taskSpec:
           steps:
             - image: bash:latest
@@ -69,7 +69,7 @@ spec:
         workspaces:
           - name: source
             workspace: source
-      - name: list-files-workspace
+      - name: list-files-workspace-2
         taskSpec:
           steps:
             - image: bash:latest
