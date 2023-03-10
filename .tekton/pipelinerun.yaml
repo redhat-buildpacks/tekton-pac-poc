@@ -47,10 +47,13 @@ spec:
               script: |
                 #!/usr/bin/env bash
                 echo "Current dir: $(pwd)"
-                echo "env variables: "
+                echo "Env variables: "
                 printenv
                 ls -la /workspace/ || true
                 ls -la /workspace/source || true
+        workspaces:
+          - name: source
+            workspace: source
       - name: buildpacks
         taskRef:
           name: buildpacks
@@ -77,10 +80,13 @@ spec:
               script: |
                 #!/usr/bin/env bash
                 echo "Current dir: $(pwd)"
-                echo "env variables: "
+                echo "Env variables: "
                 printenv
                 ls -la /workspace/ || true
                 ls -la /workspace/source || true
+        workspaces:
+          - name: source
+            workspace: source
         runAfter:
           - buildpacks
       - name: package
