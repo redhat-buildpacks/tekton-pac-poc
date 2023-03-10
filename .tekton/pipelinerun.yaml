@@ -95,7 +95,7 @@ spec:
         workspaces:
           - name: manifest-dir
             workspace: source
-      - name: integration-test
+      - name: integration
         taskRef:
           name: maven
         runAfter:
