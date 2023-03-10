@@ -75,6 +75,8 @@ spec:
                 #!/usr/bin/env bash
                 echo $(pwd)
                 ls -la ./workspace/
+        runAfter:
+          - buildpacks
       - name: package
         taskRef:
           name: maven
