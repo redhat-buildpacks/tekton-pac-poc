@@ -50,15 +50,15 @@ spec:
           - name: revision
             value: $(params.revision)
       - name: backup-git-files
-        # workspaces:
-        #   - name: source
-        #     workspace: source
-        #   - name: temp
-        #     workspace: temp
+        workspaces:
+          - name: source
+            workspace: source
+          - name: temp
+            workspace: temp
         taskSpec:
-          workspaces:
-            - name: source
-            - name: temp
+          #workspaces:
+          #  - name: source
+          #  - name: temp
           steps:
             - name: copy-files
               image: docker.io/library/bash:5.1.4
