@@ -62,11 +62,16 @@ spec:
           steps:
             - name: copy-files
               image: docker.io/library/bash:5.1.4
+              env:
+                - name: WORKSPACE_SOURCE_PATH
+                  value: $(workspaces.source.path)
+                - name: WORKSPACE_OUTPUT_PATH
+                  value: $(workspaces.output.path)
               script: |
                 #!/usr/bin/env bash
                 
                 echo "> Back up git cloned files."
-                cp -R /workspace/source/* /temp
+                cp -R ${WORKSPACE_SOURCE_PATH} ${WORKSPACE_OUTPUT_PATH}/
         runAfter:
           - fetch-repository
       - name: buildpacks
@@ -99,11 +104,16 @@ spec:
             - name: source
             - name: temp
           steps:
-            - image: bash:latest
+            - image: docker.io/library/bash:5.1.4
+              env:
+                - name: WORKSPACE_SOURCE_PATH
+                  value: $(workspaces.source.path)
+                - name: WORKSPACE_OUTPUT_PATH
+                  value: $(workspaces.output.path)
               script: |
                 #!/usr/bin/env bash
                 echo "> Restoring files from temp folder"
-                cp -R /temp/* /workspace/source
+                cp -R ${WORKSPACE_OUTPUT_PATH} ${WORKSPACE_SOURCE_PATH}/
         runAfter:
           - buildpacks
       - name: package
