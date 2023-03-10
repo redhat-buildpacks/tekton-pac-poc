@@ -106,8 +106,6 @@ spec:
       - name: undeploy-k8s
         taskRef:
           name: kubernetes-actions
-        runAfter:
-          - integration
         params:
           - name: script
             value: |
