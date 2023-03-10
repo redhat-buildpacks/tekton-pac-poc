@@ -120,7 +120,7 @@ spec:
         taskRef:
           name: maven
         runAfter:
-          - buildpacks
+          - restore-git-files
         params:
           - name: GOALS
             value:
