@@ -54,7 +54,11 @@ spec:
           workspaces:
             - name: source
           steps:
-            - image: bash:latest
+            - name: backup git cloned files
+              image: bash:latest
+              args:
+                - "--env-vars"
+                - "$(params.ENV_VARS[*])"
               script: |
                 #!/usr/bin/env bash
                 set -e
