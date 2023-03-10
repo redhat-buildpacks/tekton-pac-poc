@@ -86,6 +86,34 @@ spec:
         workspaces:
           - name: manifest-dir
             workspace: source
+      - name: integration
+        taskRef:
+          name: maven
+        runAfter:
+          - deploy-k8s
+        params:
+          - name: GOALS
+            value:
+              - -Pkubernetes
+              - clean
+              - verify
+        workspaces:
+          - name: source
+            workspace: source
+          - name: maven-settings
+            workspace: maven-settings
+      - finally: undeploy-k8s
+        taskRef:
+          name: kubernetes-actions
+        runAfter:
+          - integration
+        params:
+          - name: script
+            value: |
+              kubectl delete -f ./k8s/kubernetes.yml
+        workspaces:
+          - name: manifest-dir
+            workspace: source
   workspaces:
     - name: source
       volumeClaimTemplate:
