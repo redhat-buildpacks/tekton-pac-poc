@@ -49,7 +49,7 @@ spec:
                 echo "Current dir: $(pwd)"
                 echo "workspaces.source.path: $(workspaces.source.path)/"
         runAfter:
-          - git-clone
+          - fetch-repository
       - name: buildpacks
         taskRef:
           name: buildpacks
