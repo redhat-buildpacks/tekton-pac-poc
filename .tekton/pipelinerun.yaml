@@ -106,7 +106,7 @@ spec:
         taskRef:
           name: kubernetes-actions
         runAfter:
-          - integration-test
+          - integration
         params:
           - name: script
             value: |
