@@ -40,27 +40,27 @@ spec:
             value: $(params.repo_url)
           - name: revision
             value: $(params.revision)
-      - name: list-files-workspace-1
-        workspaces:
-          - name: source
-            workspace: source
-        taskSpec:
-          workspaces:
-            - name: source
-          steps:
-            - image: bash:latest
-              script: |
-                #!/usr/bin/env bash
-                set -e
-                
-                echo "> Setting permissions on '$(workspaces.source.path)'..."
-                chown -R "$(params.USER_ID):$(params.GROUP_ID)" "$(workspaces.source.path)"
-                
-                echo "> Creating a temp folder to copy the git code source"
-                mkdir -p "$(workspaces.source.path)/temp"
-                cp -R "$(workspaces.source.path)"/* "$(workspaces.source.path)"/temp/
-        runAfter:
-          - fetch-repository
+      # - name: list-files-workspace-1
+      #   workspaces:
+      #     - name: source
+      #       workspace: source
+      #   taskSpec:
+      #     workspaces:
+      #       - name: source
+      #     steps:
+      #       - image: bash:latest
+      #         script: |
+      #           #!/usr/bin/env bash
+      #           set -e
+      #
+      #           echo "> Setting permissions on '$(workspaces.source.path)'..."
+      #           chown -R "$(params.USER_ID):$(params.GROUP_ID)" "$(workspaces.source.path)"
+      #
+      #           echo "> Creating a temp folder to copy the git code source"
+      #           mkdir -p "$(workspaces.source.path)/temp"
+      #           cp -R "$(workspaces.source.path)"/* "$(workspaces.source.path)"/temp/
+      #   runAfter:
+      #     - fetch-repository
       - name: buildpacks
         taskRef:
           name: buildpacks
