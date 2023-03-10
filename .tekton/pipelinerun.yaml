@@ -56,9 +56,11 @@ spec:
           - name: temp
             workspace: temp
         taskSpec:
-          #workspaces:
-          #  - name: source
-          #  - name: temp
+          workspaces:
+            - name: source
+              subPath: source
+            - name: temp
+              subPath: temp
           steps:
             - name: copy-files
               image: docker.io/library/bash:5.1.4
