@@ -2,28 +2,19 @@
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
-  name: buildpacks-build-test
+  name: buildpacks
   annotations:
-    # The event we are targeting as seen from the webhook payload
-    # this can be an array too, i.e: [pull_request, push]
     pipelinesascode.tekton.dev/on-event: "[pull_request, push]"
-
-    # The branch or tag we are targeting (ie: main, refs/tags/*)
     pipelinesascode.tekton.dev/on-target-branch: "[main]"
 
-    # Fetch the needed tasks from hub to reference them as
-    # taskRef part of the pipeline.
     pipelinesascode.tekton.dev/task: "git-clone"
     pipelinesascode.tekton.dev/task-1: "buildpacks"
     pipelinesascode.tekton.dev/task-2: "maven"
     pipelinesascode.tekton.dev/task-3: "kubernetes-actions"
 
-    # how many runs we want to keep attached to this event
     pipelinesascode.tekton.dev/max-keep-runs: "5"
 spec:
   params:
-    # The variable with brackets are special to Pipelines as Code
-    # They will automatically be expanded with the events from Github.
     - name: repo_url
       value: "{{ repo_url }}"
     - name: revision
@@ -35,6 +26,7 @@ spec:
     workspaces:
       - name: source
       - name: basic-auth
+      - name: temp
     tasks:
       - name: fetch-repository
         taskRef:
@@ -49,8 +41,32 @@ spec:
             value: $(params.repo_url)
           - name: revision
             value: $(params.revision)
-      - # https://github.com/tektoncd/catalog/blob/main/task/buildpacks/0.6
-        name: buildpacks
+      - name: backup-git-files
+        workspaces:
+          - name: source
+            workspace: source
+          - name: temp
+            workspace: temp
+        taskSpec:
+          workspaces:
+            - name: source
+            - name: temp
+          steps:
+            - name: copy-files
+              image: docker.io/library/bash:5.1.4
+              env:
+                - name: WORKSPACE_SOURCE_PATH
+                  value: $(workspaces.source.path)
+                - name: WORKSPACE_OUTPUT_PATH
+                  value: $(workspaces.temp.path)
+              script: |
+                #!/usr/bin/env bash
+                
+                echo "> Back up git cloned files."
+                cp -R ${WORKSPACE_SOURCE_PATH} ${WORKSPACE_OUTPUT_PATH}/
+        runAfter:
+          - fetch-repository
+      - name: buildpacks
         taskRef:
           name: buildpacks
         runAfter:
@@ -69,14 +85,40 @@ spec:
         workspaces:
           - name: source
             workspace: source
+      - name: restore-git-files
+        workspaces:
+          - name: source
+            workspace: source
+          - name: temp
+            workspace: temp
+        taskSpec:
+          workspaces:
+            - name: source
+            - name: temp
+          steps:
+            - image: docker.io/library/bash:5.1.4
+              env:
+                - name: WORKSPACE_SOURCE_PATH
+                  value: $(workspaces.source.path)
+                - name: WORKSPACE_OUTPUT_PATH
+                  value: $(workspaces.temp.path)
+              script: |
+                #!/usr/bin/env bash
+                echo "> Restoring files from temp folder"
+                rm -rf ${WORKSPACE_SOURCE_PATH}/*
+                cp -R ${WORKSPACE_OUTPUT_PATH}/source/* ${WORKSPACE_SOURCE_PATH}/
+                ls -la ${WORKSPACE_SOURCE_PATH}/
+        runAfter:
+          - buildpacks
       - name: package
         taskRef:
           name: maven
         runAfter:
-          - buildpacks
+          - restore-git-files
         params:
           - name: GOALS
             value:
+              - -Dmaven.repo.local=$(workspaces.source.path)
               - clean
               - package
         workspaces:
@@ -96,7 +138,7 @@ spec:
         workspaces:
           - name: manifest-dir
             workspace: source
-      - name: integration-test
+      - name: integration
         taskRef:
           name: maven
         runAfter:
@@ -104,28 +146,28 @@ spec:
         params:
           - name: GOALS
             value:
+              - -Pkubernetes
               - clean
               - verify
-              - -Pkubernetes
         workspaces:
           - name: source
             workspace: source
           - name: maven-settings
             workspace: maven-settings
-      - finally: undeploy-k8s
+    finally:
+      - name: undeploy-k8s
         taskRef:
           name: kubernetes-actions
-        runAfter:
-          - integration-test
         params:
           - name: script
             value: |
               kubectl delete -f ./k8s/kubernetes.yml
         workspaces:
           - name: manifest-dir
-            workspace: source            
+            workspace: source
   workspaces:
-    - name: source
+    - name: temp
+      subPath: temp
       volumeClaimTemplate:
         spec:
           accessModes:
@@ -133,8 +175,15 @@ spec:
           resources:
             requests:
               storage: 1Gi
-    # This workspace will inject secret to help the git-clone task to be able to
-    # checkout the private repositories
+    - name: source
+      subPath: source
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 1Gi
     - name: basic-auth
       secret:
         secretName: "{{ git_auth_secret }}"
