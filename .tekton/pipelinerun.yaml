@@ -73,8 +73,8 @@ spec:
             - image: bash:latest
               script: |
                 #!/usr/bin/env bash
-                ls -la ./workspace/source
-                ls -la ./workspace/output
+                echo $(pwd)
+                ls -la ./workspace/
       - name: package
         taskRef:
           name: maven
