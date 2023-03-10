@@ -48,6 +48,8 @@ spec:
                 #!/usr/bin/env bash
                 echo "Current dir: $(pwd)"
                 echo "workspaces.source.path: $(workspaces.source.path)/"
+        runAfter:
+          - git-clone
       - name: buildpacks
         taskRef:
           name: buildpacks
