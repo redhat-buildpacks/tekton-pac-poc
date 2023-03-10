@@ -13,7 +13,7 @@ import static org.hamcrest.Matchers.is;
 @RunOnKubernetes
 public class GreetingResourceIT {
 
-    @Container(image = "THE IMAGE", ports = 8080, expectedLog = "Installed features")
+    @Container(image = "ttl.sh/c04768cb-2012-4280-990d-a9adf51c7462:2h", ports = 8080, expectedLog = "Installed features")
     static RestService app = new RestService();
 
     @Test

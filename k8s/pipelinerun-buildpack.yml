@@ -15,6 +15,7 @@ metadata:
     # taskRef part of the pipeline.
     pipelinesascode.tekton.dev/task: "git-clone"
     pipelinesascode.tekton.dev/task-1: "buildpacks"
+    pipelinesascode.tekton.dev/task-2: "maven"
 
     # how many runs we want to keep attached to this event
     pipelinesascode.tekton.dev/max-keep-runs: "5"
@@ -67,6 +68,21 @@ spec:
         workspaces:
           - name: source
             workspace: source
+      - name: test
+        taskRef:
+          name: maven
+        runAfter:
+          - buildpacks
+        params:
+          - name: GOALS
+            value:
+              - clean
+              - test
+        workspaces:
+          - name: source
+            workspace: source
+          - name: maven-settings
+            workspace: maven-settings
 
   workspaces:
     - name: source
@@ -82,3 +98,5 @@ spec:
     - name: basic-auth
       secret:
         secretName: "{{ git_auth_secret }}"
+    - name: maven-settings
+      emptyDir: {}
