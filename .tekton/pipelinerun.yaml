@@ -41,8 +41,6 @@ spec:
           - name: revision
             value: $(params.revision)
       - name: list-files-workspace-1
-        workspaces:
-          - name: source
         taskSpec:
           steps:
             - image: bash:latest
@@ -73,8 +71,6 @@ spec:
           - name: source
             workspace: source
       - name: list-files-workspace-2
-        workspaces:
-          - name: source
         taskSpec:
           steps:
             - image: bash:latest
