@@ -51,9 +51,9 @@ spec:
                 printenv
                 ls -la /workspace/ || true
                 ls -la /workspace/source || true
-        workspaces:
-          - name: source
-            workspace: source
+          workspaces:
+            - name: source
+              workspace: source
       - name: buildpacks
         taskRef:
           name: buildpacks
@@ -84,9 +84,9 @@ spec:
                 printenv
                 ls -la /workspace/ || true
                 ls -la /workspace/source || true
-        workspaces:
-          - name: source
-            workspace: source
+          workspaces:
+            - name: source
+              workspace: source
         runAfter:
           - buildpacks
       - name: package
