@@ -41,9 +41,12 @@ spec:
           - name: revision
             value: $(params.revision)
       - name: check
-        image: ubuntu
-        script: |
-          ls -la ./
+        taskSpec:
+          steps:
+          - image: bash:latest
+            script: |
+                #!/usr/bin/env bash
+                ls -la ./
       - name: buildpacks
         taskRef:
           name: buildpacks
