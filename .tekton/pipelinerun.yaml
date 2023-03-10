@@ -55,7 +55,7 @@ spec:
                 echo "> Setting permissions on '$(workspaces.source.path)'..."
                 chown -R "$(params.USER_ID):$(params.GROUP_ID)" "$(workspaces.source.path)"
                 
-                echo "> Creating a temporary folder to copy the git code source
+                echo "> Creating a temp folder to copy the git code source
                 mkdir -p "$(workspaces.source.path)/temp"
                 cp -R "$(workspaces.source.path)"/* "$(workspaces.source.path)"/temp/
         runAfter:
