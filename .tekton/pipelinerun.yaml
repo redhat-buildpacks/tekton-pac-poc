@@ -40,14 +40,14 @@ spec:
             value: $(params.repo_url)
           - name: revision
             value: $(params.revision)
-      - name: check
-        taskSpec:
-          steps:
-          - image: bash:latest
-            script: |
-                #!/usr/bin/env bash
-                ls -la ./workspace/source
-                ls -la ./workspace/output
+      # - name: check
+      #   taskSpec:
+      #     steps:
+      #     - image: bash:latest
+      #       script: |
+      #           #!/usr/bin/env bash
+      #           ls -la ./workspace/source
+      #           ls -la ./workspace/output
       - name: buildpacks
         taskRef:
           name: buildpacks
@@ -67,6 +67,14 @@ spec:
         workspaces:
           - name: source
             workspace: source
+      - name: list-files-workspace
+        taskSpec:
+          steps:
+            - image: bash:latest
+              script: |
+                #!/usr/bin/env bash
+                ls -la ./workspace/source
+                ls -la ./workspace/output
       - name: package
         taskRef:
           name: maven
