@@ -114,7 +114,7 @@ spec:
                 #!/usr/bin/env bash
                 echo "> Restoring files from temp folder"
                 rm -rf ${WORKSPACE_SOURCE_PATH}/*
-                cp -R ${WORKSPACE_OUTPUT_PATH}/source ${WORKSPACE_SOURCE_PATH}/
+                cp -r ${WORKSPACE_OUTPUT_PATH}/source ${WORKSPACE_SOURCE_PATH}/
                 ls -la ${WORKSPACE_SOURCE_PATH}/
         runAfter:
           - buildpacks
