@@ -75,8 +75,8 @@ spec:
         workspaces:
           - name: source
             workspace: source
-          - name: cache
-            workspace: cache-ws
+          # - name: cache
+          #   workspace: cache-ws
       - name: list-files-workspace-2
         workspaces:
           - name: source
@@ -151,7 +151,7 @@ spec:
             workspace: source
   workspaces:
     - name: source
-      subPath: source
+      #subPath: source
       volumeClaimTemplate:
         spec:
           accessModes:
@@ -159,15 +159,15 @@ spec:
           resources:
             requests:
               storage: 1Gi
-    - name: cache-ws
-      subPath: cache
-      volumeClaimTemplate:
-        spec:
-          accessModes:
-            - ReadWriteOnce
-          resources:
-            requests:
-              storage: 1Gi
+    # - name: cache-ws
+    #   subPath: cache
+    #   volumeClaimTemplate:
+    #     spec:
+    #       accessModes:
+    #         - ReadWriteOnce
+    #       resources:
+    #         requests:
+    #           storage: 1Gi
     - name: basic-auth
       secret:
         secretName: "{{ git_auth_secret }}"
