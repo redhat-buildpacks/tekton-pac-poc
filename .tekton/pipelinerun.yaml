@@ -40,14 +40,16 @@ spec:
             value: $(params.repo_url)
           - name: revision
             value: $(params.revision)
-      # - name: check
-      #   taskSpec:
-      #     steps:
-      #     - image: bash:latest
-      #       script: |
-      #           #!/usr/bin/env bash
-      #           ls -la ./workspace/source
-      #           ls -la ./workspace/output
+      - name: list-files-workspace
+        taskSpec:
+          steps:
+            - image: bash:latest
+              script: |
+                #!/usr/bin/env bash
+                echo "Env WORKSPACE_OUTPUT_PATH: ${WORKSPACE_OUTPUT_PATH}"
+                echo "Current dir: $(pwd)"
+                ls -la /workspace/
+                ls -la /workspace/source
       - name: buildpacks
         taskRef:
           name: buildpacks
