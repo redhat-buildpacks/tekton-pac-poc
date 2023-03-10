@@ -26,6 +26,7 @@ spec:
     workspaces:
       - name: source
       - name: basic-auth
+      - name: cache
     tasks:
       - name: fetch-repository
         taskRef:
