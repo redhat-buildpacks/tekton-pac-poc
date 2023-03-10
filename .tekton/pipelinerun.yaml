@@ -89,6 +89,7 @@ spec:
         params:
           - name: GOALS
             value:
+              - -Dmaven.repo.local=$(workspaces.source.path)
               - clean
               - package
         workspaces:
