@@ -63,7 +63,6 @@ spec:
                 - "$(params.ENV_VARS[*])"
               script: |
                 #!/usr/bin/env bash
-                set -e
                 #echo "> Setting permissions on '$(workspaces.source.path)'..."
                 #chown -R "1000:0" "$(workspaces.source.path)"
                 
