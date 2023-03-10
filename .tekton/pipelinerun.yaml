@@ -50,11 +50,11 @@ spec:
           - name: revision
             value: $(params.revision)
       - name: backup-git-files
-        workspaces:
-          - name: source
-            workspace: source
-          - name: temp
-            workspace: temp
+        # workspaces:
+        #   - name: source
+        #     workspace: source
+        #   - name: temp
+        #     workspace: temp
         taskSpec:
           workspaces:
             - name: source
