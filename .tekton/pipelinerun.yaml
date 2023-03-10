@@ -49,8 +49,7 @@ spec:
             value: $(params.repo_url)
           - name: revision
             value: $(params.revision)
-      - # https://github.com/tektoncd/catalog/blob/main/task/buildpacks/0.6
-        name: buildpacks
+      - name: buildpacks
         taskRef:
           name: buildpacks
         runAfter:
