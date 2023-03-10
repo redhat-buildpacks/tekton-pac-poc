@@ -64,7 +64,7 @@ spec:
                 #chown -R "1000:0" "$(workspaces.source.path)"
                 
                 echo "> Creating a temp folder to copy the git code source"
-                #mkdir -p "$(workspaces.source.path)"/temp
+                mkdir -p "$(workspaces.source.path)"/temp
                 #cp -R "$(workspaces.source.path)"/* "$(workspaces.source.path)"/temp/
         runAfter:
           - fetch-repository
