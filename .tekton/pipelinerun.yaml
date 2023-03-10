@@ -163,6 +163,7 @@ spec:
             workspace: source
   workspaces:
     - name: temp
+      subPath: temp
       volumeClaimTemplate:
         spec:
           accessModes:
@@ -171,6 +172,7 @@ spec:
             requests:
               storage: 1Gi
     - name: source
+      subPath: source
       volumeClaimTemplate:
         spec:
           accessModes:
