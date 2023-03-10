@@ -47,7 +47,6 @@ spec:
               script: |
                 #!/usr/bin/env bash
                 echo "Current dir: $(pwd)"
-                echo "Content: /workspace/output/"
                 ls -la /workspace/source/ || true
                 ls -la /workspace/output/ || true
         runAfter:
@@ -78,7 +77,7 @@ spec:
               script: |
                 #!/usr/bin/env bash
                 echo "Current dir: $(pwd)"
-                echo "Content: /workspace/output/"
+                ls -la /workspace/source/ || true
                 ls -la /workspace/output/ || true
         runAfter:
           - buildpacks
