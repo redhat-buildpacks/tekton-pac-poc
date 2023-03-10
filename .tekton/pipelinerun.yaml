@@ -26,7 +26,6 @@ spec:
     workspaces:
       - name: source
       - name: basic-auth
-      - name: cache
     tasks:
       - name: fetch-repository
         taskRef:
@@ -45,19 +44,16 @@ spec:
         workspaces:
           - name: source
             workspace: source
-          - name: cache
-            workspace: cache
         taskSpec:
           workspaces:
             - name: source
-            - name: cache
           steps:
             - image: bash:latest
               script: |
                 #!/usr/bin/env bash
                 echo "Home dir: $HOME"
                 ls -la /workspace/source/ || true
-                cp -R "$(workspaces.source.path)"/* "$(workspaces.cache.path)"
+                cp -R "$(workspaces.source.path)"/* "$(workspaces.source.path)/temp"
         runAfter:
           - fetch-repository
       - name: buildpacks
@@ -83,12 +79,9 @@ spec:
         workspaces:
           - name: source
             workspace: source
-          - name: cache
-            workspace: cache
         taskSpec:
           workspaces:
             - name: source
-            - name: cache
           steps:
             - image: bash:latest
               script: |
@@ -158,14 +151,6 @@ spec:
             workspace: source
   workspaces:
     - name: source
-      volumeClaimTemplate:
-        spec:
-          accessModes:
-            - ReadWriteOnce
-          resources:
-            requests:
-              storage: 1Gi
-    - name: cache
       volumeClaimTemplate:
         spec:
           accessModes:
