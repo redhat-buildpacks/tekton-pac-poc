@@ -2,7 +2,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
-  name: buildpacks-build
+  name: buildpacks-build-test
   annotations:
     # The event we are targeting as seen from the webhook payload
     # this can be an array too, i.e: [pull_request, push]
@@ -68,7 +68,7 @@ spec:
         workspaces:
           - name: source
             workspace: source
-      - name: test
+      - name: package
         taskRef:
           name: maven
         runAfter:
@@ -77,13 +77,52 @@ spec:
           - name: GOALS
             value:
               - clean
-              - test
+              - package
         workspaces:
           - name: source
             workspace: source
           - name: maven-settings
             workspace: maven-settings
-
+      - name: deploy-k8s
+        taskRef:
+          name: kubernetes-actions
+        runAfter:
+          - unit-test
+        params:
+          - name: script
+            value: |
+              kubectl apply -f ./k8s/deploy.yml
+        workspaces:
+          - name: manifest-dir
+            workspace: source
+      - name: integration-test
+        taskRef:
+          name: maven
+        runAfter:
+          - deploy-k8s
+        params:
+          - name: GOALS
+            value:
+              - clean
+              - verify
+              - -Pkubernetes
+        workspaces:
+          - name: source
+            workspace: source
+          - name: maven-settings
+            workspace: maven-settings
+      - finally: undeploy-k8s
+        taskRef:
+          name: kubernetes-actions
+        runAfter:
+          - integration-test
+        params:
+          - name: script
+            value: |
+              kubectl delete -f ./k8s/deploy.yml
+        workspaces:
+          - name: manifest-dir
+            workspace: source            
   workspaces:
     - name: source
       volumeClaimTemplate:
