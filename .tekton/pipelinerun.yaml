@@ -65,7 +65,7 @@ spec:
                 #!/usr/bin/env bash
                 set -e
                 echo "> Setting permissions on '$(workspaces.source.path)'..."
-                chown -R "$(params.USER_ID):$(params.GROUP_ID)" "$(workspaces.source.path)"
+                chown -R "1000:0" "$(workspaces.source.path)"
                 
                 echo "> Creating a temp folder to copy the git code source"
                 mkdir -p "$(workspaces.source.path)/temp"
