@@ -52,8 +52,8 @@ spec:
               script: |
                 #!/usr/bin/env bash
                 echo "Current dir: $(pwd)"
+                echo "Home dir: $HOME"
                 ls -la /workspace/source/ || true
-                ls -la /workspace/output/ || true
         runAfter:
           - fetch-repository
       - name: buildpacks
@@ -87,6 +87,7 @@ spec:
               script: |
                 #!/usr/bin/env bash
                 echo "Current dir: $(pwd)"
+                echo "Home dir: $HOME"
                 ls -la /workspace/source/ || true
                 ls -la /workspace/output/ || true
         runAfter:
