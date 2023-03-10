@@ -29,6 +29,8 @@ spec:
     params:
       - name: repo_url
       - name: revision
+      - name: USER_ID
+      - name: GROUP_ID
     workspaces:
       - name: source
       - name: basic-auth
