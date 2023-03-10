@@ -66,7 +66,7 @@ spec:
                 - name: WORKSPACE_SOURCE_PATH
                   value: $(workspaces.source.path)
                 - name: WORKSPACE_OUTPUT_PATH
-                  value: $(workspaces.output.path)
+                  value: $(workspaces.temp.path)
               script: |
                 #!/usr/bin/env bash
                 
@@ -109,7 +109,7 @@ spec:
                 - name: WORKSPACE_SOURCE_PATH
                   value: $(workspaces.source.path)
                 - name: WORKSPACE_OUTPUT_PATH
-                  value: $(workspaces.output.path)
+                  value: $(workspaces.temp.path)
               script: |
                 #!/usr/bin/env bash
                 echo "> Restoring files from temp folder"
