@@ -50,6 +50,7 @@ spec:
           steps:
             - image: bash:latest
               script: |
+                #!/usr/bin/env bash
                 set -e
                 
                 echo "> Setting permissions on '$(workspaces.source.path)'..."
@@ -90,6 +91,7 @@ spec:
             - image: bash:latest
               script: |
                 #!/usr/bin/env bash
+                set -e
                 
                 ls -la /
                 ls -la /workspace/ || true
