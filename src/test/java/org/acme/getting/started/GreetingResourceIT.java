@@ -10,7 +10,7 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;
 
 @Jester
-@RunOnKubernetes
+@RunOnKubernetes(ephemeralNamespaceEnabled = true, deleteNamespaceAfterAll = true)
 public class GreetingResourceIT {
 
     @Container(image = "ttl.sh/c04768cb-2012-4280-990d-a9adf51c7462:2h", ports = 8080, expectedLog = "Installed features")
