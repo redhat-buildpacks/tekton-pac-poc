@@ -40,6 +40,10 @@ spec:
             value: $(params.repo_url)
           - name: revision
             value: $(params.revision)
+      - name: check
+        image: ubuntu
+        script: |
+          ls -la ./
       - name: buildpacks
         taskRef:
           name: buildpacks
@@ -122,6 +126,8 @@ spec:
           resources:
             requests:
               storage: 1Gi
+    - name: build
+      emptyDir: {}
     - name: basic-auth
       secret:
         secretName: "{{ git_auth_secret }}"
