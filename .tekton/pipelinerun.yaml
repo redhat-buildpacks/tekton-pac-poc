@@ -172,17 +172,6 @@ spec:
             workspace: maven-settings
           - name: cache
             workspace: cache
-    finally:
-      - name: undeploy-k8s
-        taskRef:
-          name: kubernetes-actions
-        params:
-          - name: script
-            value: |
-              kubectl delete -f ./k8s/cache-pvc.yml
-        workspaces:
-          - name: manifest-dir
-            workspace: source
   workspaces:
     - name: cache
       persistentVolumeClaim:
