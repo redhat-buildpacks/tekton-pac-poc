@@ -27,7 +27,6 @@ spec:
       - name: source
       - name: basic-auth
       - name: temp
-      - name: cache
     tasks:
       - name: fetch-repository
         taskRef:
@@ -48,13 +47,10 @@ spec:
             workspace: source
           - name: temp
             workspace: temp
-          - name: cache
-            workspace: cache
         taskSpec:
           workspaces:
             - name: source
             - name: temp
-            - name: cache
           steps:
             - name: copy-files
               image: docker.io/library/bash:5.1.4
@@ -91,31 +87,31 @@ spec:
             workspace: source
           - name: cache
             workspace: cache
-      #- name: restore-git-files
-      #  workspaces:
-      #    - name: source
-      #      workspace: source
-      #    - name: temp
-      #      workspace: temp
-      #  taskSpec:
-      #    workspaces:
-      #      - name: source
-      #      - name: temp
-      #    steps:
-      #      - image: docker.io/library/bash:5.1.4
-      #        env:
-      #          - name: WORKSPACE_SOURCE_PATH
-      #            value: $(workspaces.source.path)
-      #          - name: WORKSPACE_OUTPUT_PATH
-      #            value: $(workspaces.temp.path)
-      #        script: |
-      #          #!/usr/bin/env bash
-      #          echo "> Restoring files from temp folder"
-      #          rm -rf ${WORKSPACE_SOURCE_PATH}/*
-      #          cp -R ${WORKSPACE_OUTPUT_PATH}/source/* ${WORKSPACE_SOURCE_PATH}/
-      #          ls -la ${WORKSPACE_SOURCE_PATH}/
-      #  runAfter:
-      #    - buildpacks
+      - name: restore-git-files
+        workspaces:
+          - name: source
+            workspace: source
+          - name: temp
+            workspace: temp
+        taskSpec:
+          workspaces:
+            - name: source
+            - name: temp
+          steps:
+            - image: docker.io/library/bash:5.1.4
+              env:
+                - name: WORKSPACE_SOURCE_PATH
+                  value: $(workspaces.source.path)
+                - name: WORKSPACE_OUTPUT_PATH
+                  value: $(workspaces.temp.path)
+              script: |
+                #!/usr/bin/env bash
+                echo "> Restoring files from temp folder"
+                rm -rf ${WORKSPACE_SOURCE_PATH}/*
+                cp -R ${WORKSPACE_OUTPUT_PATH}/source/* ${WORKSPACE_SOURCE_PATH}/
+                ls -la ${WORKSPACE_SOURCE_PATH}/
+        runAfter:
+          - buildpacks
       # - name: package
       #   taskRef:
       #     name: maven
