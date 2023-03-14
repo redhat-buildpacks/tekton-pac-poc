@@ -157,6 +157,8 @@ spec:
             workspace: source
           - name: maven-settings
             workspace: maven-settings
+          - name: cache
+            workspace: cache
     #finally:
     #  - name: undeploy-k8s
     #    taskRef:
