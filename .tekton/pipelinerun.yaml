@@ -176,7 +176,7 @@ spec:
                 - -Pkubernetes
                 - clean
                 - verify
-           steps:
+          steps:
              - name: mvn-goals
                image: $(params.MAVEN_IMAGE)
                workingDir: $(workspaces.source.path)/$(params.CONTEXT_DIR)
