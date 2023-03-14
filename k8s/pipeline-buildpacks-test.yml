@@ -142,7 +142,7 @@ spec:
         taskRef:
           name: maven
         runAfter:
-          - deploy-k8s
+          - restore-git-files
         params:
           - name: GOALS
             value:
