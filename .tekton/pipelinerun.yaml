@@ -27,6 +27,7 @@ spec:
       - name: source
       - name: basic-auth
       - name: temp
+      - name: cache
     tasks:
       - name: fetch-repository
         taskRef:
