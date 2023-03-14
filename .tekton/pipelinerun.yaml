@@ -42,31 +42,33 @@ spec:
             value: $(params.repo_url)
           - name: revision
             value: $(params.revision)
-      #- name: backup-git-files
-      #  workspaces:
-      #    - name: source
-      #      workspace: source
-      #    - name: temp
-      #      workspace: temp
-      #  taskSpec:
-      #    workspaces:
-      #      - name: source
-      #      - name: temp
-      #    steps:
-      #      - name: copy-files
-      #        image: docker.io/library/bash:5.1.4
-      #        env:
-      #          - name: WORKSPACE_SOURCE_PATH
-      #            value: $(workspaces.source.path)
-      #          - name: WORKSPACE_OUTPUT_PATH
-      #            value: $(workspaces.temp.path)
-      #        script: |
-      #          #!/usr/bin/env bash
-      #
-      #          echo "> Back up git cloned files."
-      #          cp -R ${WORKSPACE_SOURCE_PATH} ${WORKSPACE_OUTPUT_PATH}/
-      #  runAfter:
-      #    - fetch-repository
+      - name: backup-git-files
+        workspaces:
+          - name: source
+            workspace: source
+          - name: temp
+            workspace: temp
+          - name: cache
+            workspace: cache
+        taskSpec:
+          workspaces:
+            - name: source
+            - name: temp
+          steps:
+            - name: copy-files
+              image: docker.io/library/bash:5.1.4
+              env:
+                - name: WORKSPACE_SOURCE_PATH
+                  value: $(workspaces.source.path)
+                - name: WORKSPACE_OUTPUT_PATH
+                  value: $(workspaces.temp.path)
+              script: |
+                #!/usr/bin/env bash
+      
+                echo "> Back up git cloned files."
+                cp -R ${WORKSPACE_SOURCE_PATH} ${WORKSPACE_OUTPUT_PATH}/
+        runAfter:
+          - fetch-repository
       - name: buildpacks
         taskRef:
           name: buildpacks
