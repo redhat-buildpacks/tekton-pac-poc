@@ -144,7 +144,8 @@ spec:
         taskRef:
           name: maven
         runAfter:
-          - restore-git-files
+          #- restore-git-files
+          - buildpacks
         params:
           - name: GOALS
             value:
