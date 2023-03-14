@@ -110,34 +110,34 @@ spec:
                 ls -la ${WORKSPACE_SOURCE_PATH}/
         runAfter:
           - buildpacks
-      - name: package
-        taskRef:
-          name: maven
-        runAfter:
-          - restore-git-files
-        params:
-          - name: GOALS
-            value:
-              - -Dmaven.repo.local=$(workspaces.source.path)
-              - clean
-              - package
-        workspaces:
-          - name: source
-            workspace: source
-          - name: maven-settings
-            workspace: maven-settings
-      - name: deploy-k8s
-        taskRef:
-          name: kubernetes-actions
-        runAfter:
-          - package
-        params:
-          - name: script
-            value: |
-              kubectl apply -f ./k8s/kubernetes.yml
-        workspaces:
-          - name: manifest-dir
-            workspace: source
+      # - name: package
+      #   taskRef:
+      #     name: maven
+      #   runAfter:
+      #     - restore-git-files
+      #   params:
+      #     - name: GOALS
+      #       value:
+      #         - -Dmaven.repo.local=$(workspaces.source.path)
+      #         - clean
+      #         - package
+      #   workspaces:
+      #     - name: source
+      #       workspace: source
+      #     - name: maven-settings
+      #       workspace: maven-settings
+      #- name: deploy-k8s
+      #  taskRef:
+      #    name: kubernetes-actions
+      #  runAfter:
+      #    - package
+      #  params:
+      #    - name: script
+      #      value: |
+      #        kubectl apply -f ./k8s/kubernetes.yml
+      #  workspaces:
+      #    - name: manifest-dir
+      #      workspace: source
       - name: integration
         taskRef:
           name: maven
