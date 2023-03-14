@@ -27,6 +27,7 @@ spec:
       - name: source
       - name: basic-auth
       - name: temp
+      - name: cache
     tasks:
       - name: fetch-repository
         taskRef:
@@ -61,7 +62,7 @@ spec:
                   value: $(workspaces.temp.path)
               script: |
                 #!/usr/bin/env bash
-                
+      
                 echo "> Back up git cloned files."
                 cp -R ${WORKSPACE_SOURCE_PATH} ${WORKSPACE_OUTPUT_PATH}/
         runAfter:
@@ -85,6 +86,8 @@ spec:
         workspaces:
           - name: source
             workspace: source
+          - name: cache
+            workspace: cache
       - name: restore-git-files
         workspaces:
           - name: source
@@ -143,6 +146,7 @@ spec:
           name: maven
         runAfter:
           - restore-git-files
+          #- buildpacks
         params:
           - name: GOALS
             value:
@@ -154,6 +158,8 @@ spec:
             workspace: source
           - name: maven-settings
             workspace: maven-settings
+          - name: cache
+            workspace: cache
     #finally:
     #  - name: undeploy-k8s
     #    taskRef:
@@ -166,6 +172,10 @@ spec:
     #      - name: manifest-dir
     #        workspace: source
   workspaces:
+    - name: cache
+      subPath: cache
+      persistentVolumeClaim:
+        claimName: cache-volume-ws-pvc
     - name: temp
       subPath: temp
       volumeClaimTemplate:
