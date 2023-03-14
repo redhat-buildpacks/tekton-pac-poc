@@ -172,6 +172,8 @@ spec:
             - name: M2_REPO_PATH
               default: ".m2"
             - name: GOALS
+              default:
+                - package
               value:
                 - -Pkubernetes
                 - clean
