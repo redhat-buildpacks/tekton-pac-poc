@@ -1,17 +1,4 @@
 ---
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: cache-volume-ws
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1Gi
-  storageClassName: standard
-  volumeMode: Filesystem
----
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
@@ -55,6 +42,30 @@ spec:
             value: $(params.repo_url)
           - name: revision
             value: $(params.revision)
+      - name: create-pvc
+        taskRef:
+          name: kubernetes-actions
+        runAfter:
+          - fetch-repository
+        params:
+          - name: script
+            value: |
+              PVC_NAME="cache-volume-ws-$(params.revision)"
+              echo $PVC_NAME
+              cat <<EOF | kubectl apply -f -
+              apiVersion: v1
+              kind: PersistentVolumeClaim
+              metadata:
+                name: $PVC_NAME
+              spec:
+                accessModes:
+                  - ReadWriteOnce
+                resources:
+                  requests:
+                    storage: 1Gi
+                storageClassName: standard
+                volumeMode: Filesystem  
+              EOF
       - name: backup-git-files
         workspaces:
           - name: source
@@ -142,18 +153,6 @@ spec:
       #       workspace: source
       #     - name: maven-settings
       #       workspace: maven-settings
-      #- name: deploy-k8s
-      #  taskRef:
-      #    name: kubernetes-actions
-      #  runAfter:
-      #    - package
-      #  params:
-      #    - name: script
-      #      value: |
-      #        kubectl apply -f ./k8s/kubernetes.yml
-      #  workspaces:
-      #    - name: manifest-dir
-      #      workspace: source
       - name: integration
         taskRef:
           name: maven
@@ -173,21 +172,21 @@ spec:
             workspace: maven-settings
           - name: cache
             workspace: cache
-    #finally:
-    #  - name: undeploy-k8s
-    #    taskRef:
-    #      name: kubernetes-actions
-    #    params:
-    #      - name: script
-    #        value: |
-    #          kubectl delete -f ./k8s/kubernetes.yml
-    #    workspaces:
-    #      - name: manifest-dir
-    #        workspace: source
+    finally:
+      - name: undeploy-k8s
+        taskRef:
+          name: kubernetes-actions
+        params:
+          - name: script
+            value: |
+              kubectl delete -f ./k8s/cache-pvc.yml
+        workspaces:
+          - name: manifest-dir
+            workspace: source
   workspaces:
     - name: cache
       persistentVolumeClaim:
-        claimName: cache-volume-ws
+        claimName: "cache-volume-ws-{{ revision }}"
     - name: temp
       volumeClaimTemplate:
         spec:
