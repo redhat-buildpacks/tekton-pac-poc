@@ -154,24 +154,39 @@ spec:
       #     - name: maven-settings
       #       workspace: maven-settings
       - name: integration
-        taskRef:
-          name: maven
         runAfter:
           - restore-git-files
-          #- buildpacks
+        taskSpec:
+          workspaces:
+            - name: source
+              workspace: source
+            - name: maven-settings
+              workspace: maven-settings
+            - name: cache
+              workspace: cache
         params:
+          - name: MAVEN_IMAGE
+            value: gcr.io/cloud-builders/mvn@sha256:57523fc43394d6d9d2414ee8d1c85ed7a13460cbb268c3cd16d28cfb3859e641 #tag: latest
+          - name: CONTEXT_DIR
+            value: "."
+          - name: M2_REPO_PATH
+            value: ".m2"
           - name: GOALS
             value:
               - -Pkubernetes
               - clean
               - verify
-        workspaces:
-          - name: source
-            workspace: source
-          - name: maven-settings
-            workspace: maven-settings
-          - name: cache
-            workspace: cache
+        steps:
+          - name: mvn-goals
+            image: $(params.MAVEN_IMAGE)
+            workingDir: $(workspaces.source.path)/$(params.CONTEXT_DIR)
+            command: [ "/usr/bin/mvn" ]
+            args:
+              - -s
+              - $(workspaces.maven-settings.path)/settings.xml
+              - -Dmaven.repo.local
+              - "$(params.M2_REPO_PATH)"
+              - "$(params.GOALS)"
   workspaces:
     - name: cache
       persistentVolumeClaim:
