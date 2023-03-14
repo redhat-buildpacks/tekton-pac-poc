@@ -175,13 +175,8 @@ spec:
   workspaces:
     - name: cache
       subPath: cache
-      volumeClaimTemplate:
-        spec:
-          accessModes:
-            - ReadWriteOnce
-          resources:
-            requests:
-              storage: 1Gi
+      persistentVolumeClaim:
+        claimName: cache-volume-ws-pvc
     - name: temp
       subPath: temp
       volumeClaimTemplate:
