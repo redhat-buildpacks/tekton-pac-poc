@@ -163,11 +163,6 @@ spec:
             value: "."
           - name: M2_REPO_PATH
             value: ".m2"
-          - name: GOALS
-            value:
-              - -Pkubernetes
-              - clean
-              - verify
         taskSpec:
           workspaces:
             - name: source
@@ -186,7 +181,9 @@ spec:
                  - $(workspaces.maven-settings.path)/settings.xml
                  - -Dmaven.repo.local
                  - "$(params.M2_REPO_PATH)"
-                 - "$(params.GOALS)"
+                 - -Pkubernetes
+                 - clean
+                 - verify
   workspaces:
     - name: cache
       persistentVolumeClaim:
