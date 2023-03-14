@@ -1,0 +1,201 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: buildpacks
+  annotations:
+    pipelinesascode.tekton.dev/on-event: "[pull_request, push]"
+    pipelinesascode.tekton.dev/on-target-branch: "[main]"
+
+    pipelinesascode.tekton.dev/task: "git-clone"
+    pipelinesascode.tekton.dev/task-1: "buildpacks"
+    pipelinesascode.tekton.dev/task-2: "maven"
+    pipelinesascode.tekton.dev/task-3: "kubernetes-actions"
+
+    pipelinesascode.tekton.dev/max-keep-runs: "5"
+spec:
+  params:
+    - name: repo_url
+      value: "{{ repo_url }}"
+    - name: revision
+      value: "{{ revision }}"
+  pipelineSpec:
+    params:
+      - name: repo_url
+      - name: revision
+    workspaces:
+      - name: source
+      - name: basic-auth
+      - name: temp
+      - name: cache
+    tasks:
+      - name: fetch-repository
+        taskRef:
+          name: git-clone
+        workspaces:
+          - name: output
+            workspace: source
+          - name: basic-auth
+            workspace: basic-auth
+        params:
+          - name: url
+            value: $(params.repo_url)
+          - name: revision
+            value: $(params.revision)
+      - name: backup-git-files
+        workspaces:
+          - name: source
+            workspace: source
+          - name: temp
+            workspace: temp
+        taskSpec:
+          workspaces:
+            - name: source
+            - name: temp
+          steps:
+            - name: copy-files
+              image: docker.io/library/bash:5.1.4
+              env:
+                - name: WORKSPACE_SOURCE_PATH
+                  value: $(workspaces.source.path)
+                - name: WORKSPACE_OUTPUT_PATH
+                  value: $(workspaces.temp.path)
+              script: |
+                #!/usr/bin/env bash
+      
+                echo "> Back up git cloned files."
+                cp -R ${WORKSPACE_SOURCE_PATH} ${WORKSPACE_OUTPUT_PATH}/
+        runAfter:
+          - fetch-repository
+      - name: buildpacks
+        taskRef:
+          name: buildpacks
+        runAfter:
+          - fetch-repository
+        params:
+          - name: APP_IMAGE
+            value: ttl.sh/c04768cb-2012-4280-990d-a9adf51c7462:2h
+          - name: BUILDER_IMAGE
+            # value: codejive/buildpacks-quarkus-builder
+            value: gcr.io/paketo-buildpacks/builder:base
+          - name: ENV_VARS
+            value:
+              - "BP_NATIVE_IMAGE=false"
+              - "BP_MAVEN_BUILT_ARTIFACT=func.yaml target/quarkus-app/lib/ target/quarkus-app/*.jar target/quarkus-app/app/ target/quarkus-app/quarkus/"
+              - "BP_MAVEN_BUILD_ARGUMENTS=package -DskipTests=true -Dmaven.javadoc.skip=true -Dquarkus.package.type=fast-jar"
+        workspaces:
+          - name: source
+            workspace: source
+          - name: cache
+            workspace: cache
+      - name: restore-git-files
+        workspaces:
+          - name: source
+            workspace: source
+          - name: temp
+            workspace: temp
+        taskSpec:
+          workspaces:
+            - name: source
+            - name: temp
+          steps:
+            - image: docker.io/library/bash:5.1.4
+              env:
+                - name: WORKSPACE_SOURCE_PATH
+                  value: $(workspaces.source.path)
+                - name: WORKSPACE_OUTPUT_PATH
+                  value: $(workspaces.temp.path)
+              script: |
+                #!/usr/bin/env bash
+                echo "> Restoring files from temp folder"
+                rm -rf ${WORKSPACE_SOURCE_PATH}/*
+                cp -R ${WORKSPACE_OUTPUT_PATH}/source/* ${WORKSPACE_SOURCE_PATH}/
+                ls -la ${WORKSPACE_SOURCE_PATH}/
+        runAfter:
+          - buildpacks
+      # - name: package
+      #   taskRef:
+      #     name: maven
+      #   runAfter:
+      #     - restore-git-files
+      #   params:
+      #     - name: GOALS
+      #       value:
+      #         - -Dmaven.repo.local=$(workspaces.source.path)
+      #         - clean
+      #         - package
+      #   workspaces:
+      #     - name: source
+      #       workspace: source
+      #     - name: maven-settings
+      #       workspace: maven-settings
+      #- name: deploy-k8s
+      #  taskRef:
+      #    name: kubernetes-actions
+      #  runAfter:
+      #    - package
+      #  params:
+      #    - name: script
+      #      value: |
+      #        kubectl apply -f ./k8s/kubernetes.yml
+      #  workspaces:
+      #    - name: manifest-dir
+      #      workspace: source
+      - name: integration
+        taskRef:
+          name: maven
+        runAfter:
+          - restore-git-files
+          #- buildpacks
+        params:
+          - name: GOALS
+            value:
+              - -Pkubernetes
+              - clean
+              - verify
+        workspaces:
+          - name: source
+            workspace: source
+          - name: maven-settings
+            workspace: maven-settings
+          - name: cache
+            workspace: cache
+    #finally:
+    #  - name: undeploy-k8s
+    #    taskRef:
+    #      name: kubernetes-actions
+    #    params:
+    #      - name: script
+    #        value: |
+    #          kubectl delete -f ./k8s/kubernetes.yml
+    #    workspaces:
+    #      - name: manifest-dir
+    #        workspace: source
+  workspaces:
+    - name: cache
+      subPath: cache
+      persistentVolumeClaim:
+        claimName: cache-volume-ws-pvc
+    - name: temp
+      subPath: temp
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 1Gi
+    - name: source
+      subPath: source
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 1Gi
+    - name: basic-auth
+      secret:
+        secretName: "{{ git_auth_secret }}"
+    - name: maven-settings
+      emptyDir: {}
