@@ -163,14 +163,15 @@ spec:
             value: "."
           - name: M2_REPO_PATH
             value: ".m2"
+        workspaces:
+          - name: source
+            workspace: source
+          - name: cache
+            workspace: cache
         taskSpec:
           workspaces:
             - name: source
-              workspace: source
-            - name: maven-settings
-              workspace: maven-settings
             - name: cache
-              workspace: cache
           steps:
              - name: mvn-goals
                image: $(params.MAVEN_IMAGE)
