@@ -54,6 +54,7 @@ spec:
           workspaces:
             - name: source
             - name: temp
+            - name: cache
           steps:
             - name: copy-files
               image: docker.io/library/bash:5.1.4
